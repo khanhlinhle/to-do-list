@@ -1,112 +1,80 @@
-let itemList = [];
+const key = "itemList"
 
+window.addEventListener('DOMContentLoaded', (event) => {
+    let itemList = loadList();
+    if (itemList === undefined || itemList === null) {
+        itemList = [];
+        saveList(itemList);
+    }
+    updateView();
+});
 
-let addItem = () => {
-    let todo = {
-        contents: document.getElementById("itemInput").value,
-        piority: document.getElementById("priorityList").value,
+function saveList(itemList) {
+    localStorage.setItem(key, JSON.stringify(itemList));
+}
+
+function loadList() {
+    return JSON.parse(localStorage.getItem(key));
+}
+
+function addItem() {
+    const content = document.getElementById("itemInput").value;
+    const item = {
+        text: content,
         isDone: false
+    }
 
-    };
-    itemList.push(todo);
-    showList(itemList);
+    let itemList = loadList();
+    itemList.push(item); // <~ update vào object item
+    saveList(itemList);
+
+    document.getElementById("itemInput").value = ""; // <~ reset lại itemInput
+    updateView();
 }
 
-let showList = (list) => {
-    let message = list.map(function(item, index) {
+function updateView() {
+    let html = "";
+    let showNotDoneOnly = document.getElementById("showNotDone").checked;
+    let itemList = loadList();
+    for (let i = 0; i < itemList.length; i++) {
+        const item = itemList[i];
+
+        if (showNotDoneOnly && item.isDone) {
+            // skip current index
+            continue;
+        }
+
+        let tempHtml = `<li>${item.text}`;
+        tempHtml += ` <a href='#' onclick='removeItem(${i})'>X</a>`;
+
         if (item.isDone) {
-            if (item.piority == 1) {
-                return (
-                    `<li>
-                    <input type="checkbox" onchange="completeItem(${index})" id="justV" checked = true/>
-                    <label> ${item.contents} </label>
-                    <i class="fas fa-star"></i>
-                    <a href="#" onclick="toggle(${index})">unDone</a>
-                    <button onclick="removeItem(${index})">X</button>
-                    </li>`.strike()
-                )
-            } else if (item.piority == 2) {
-                return (
-                    `<li>
-                    <input type="checkbox" onchange="completeItem(${index})" id="justV" checked = true/>
-                    <label> ${item.contents} </label>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <a href="#" onclick="toggle(${index})">unDone</a>
-                    <button onclick="removeItem(${index})">X</button>
-                    </li>`.strike()
-                )
-            } else if (item.piority == 3) {
-                return (
-                    `<li>
-                    <input type="checkbox" onchange="completeItem(${index})" id="justV" checked = true/>
-                    <label> ${item.contents} </label>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <a href="#" onclick="toggle(${index})">unDone</a>
-                    <button onclick="removeItem(${index})">X</button>
-                    </li>`.strike()
-                )
-            }
-        }
-        if (item.piority == 1) {
-            return (
-                `<li>
-                <input type="checkbox" onchange="completeItem(${index})" id="justV"/>
-                <label> ${item.contents} </label>
-                <i class="fas fa-star"></i>
-                <a href="#" onclick="toggle(${index})">Done</a>
-                <button onclick="removeItem(${index})">X</button>
-                    </li>`.strike()
-            )
-        } else if (item.piority == 2) {
-            return (
-                `<li>
-                <input type="checkbox" onchange="completeItem(${index})" id="justV"/>
-                <label> ${item.contents} </label>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <a href="#" onclick="toggle(${index})">Done</a>
-                <button onclick="removeItem(${index})">X</button>
-
-                    </li>`.strike()
-            )
-        } else if (item.piority == 3) {
-            return (
-                `<li>
-                <input type="checkbox" onchange="completeItem(${index})" id="justV"/>
-                <label> ${item.contents} </label>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <a href="#" onclick="toggle(${index})">Done</a>
-                <button onclick="removeItem(${index})">X</button>
-                    </li>`.strike()
-            )
+            tempHtml += ` <a href='#' onclick='toggleDone(${i})'>Mark-Not-Done</a>`;
+            tempHtml = tempHtml.strike();
+        } else {
+            tempHtml += ` <a href='#' onclick='toggleDone(${i})'>Mark-Done</a>`;
         }
 
-    }).join(""); // Change array to string
+        tempHtml += `</li>\n`;
+        html += tempHtml;
+    }
 
-    console.log(itemList);
-    document.getElementById("resultArea").innerHTML = message;
+    document.getElementById("resultArea").innerHTML = html;
 }
-
 
 function removeItem(index) {
+    let itemList = loadList();
     itemList.splice(index, 1);
-    showList(itemList);
+    saveList(itemList);
+    updateView();
 }
 
-let completeItem = (index) => {
+function toggleDone(index) {
+    let itemList = loadList();
     itemList[index].isDone = !itemList[index].isDone;
-    if (itemList[index].isDone) {
-        document.getElementById("justV").checked = true;
-    }
-    showList(itemList);
+    saveList(itemList);
+    updateView();
 }
 
-let toggle = (index) => {
-    itemList[index].isDone = !itemList[index].isDone;
-    showList(itemList);
+function onToggleChanged() {
+    updateView();
 }

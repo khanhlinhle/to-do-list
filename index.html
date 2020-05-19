@@ -31,14 +31,16 @@
     </nav>
     <section>
         <h1 class="text-muted">To do list:</h1>
-        <select id="priorityList">
-            <option selected >Choose its priority</option>
+        <!-- <select id="priorityList">
+            <option selected>Choose its priority</option>
             <option value="1">First</option>
             <option value="2">Second</option>
             <option value="3">Third</option>
-        </select>
+        </select> -->
         <input type="text" id="itemInput">
         <button onclick="addItem()">Add</button>
+        <input type="checkbox" id="showNotDone" onchange="onToggleChanged()" /> Show not done tasks only
+
         <ul id="resultArea">
 
         </ul>
