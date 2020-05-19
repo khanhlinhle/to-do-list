@@ -19,8 +19,10 @@ function loadList() {
 
 function addItem() {
     const content = document.getElementById("itemInput").value;
+    const priority = document.getElementById("priorityList").value;
     const item = {
         text: content,
+        star: priority,
         isDone: false
     }
 
@@ -29,12 +31,14 @@ function addItem() {
     saveList(itemList);
 
     document.getElementById("itemInput").value = ""; // <~ reset lại itemInput
+
     updateView();
 }
 
 function updateView() {
     let html = "";
     let showNotDoneOnly = document.getElementById("showNotDone").checked;
+
     let itemList = loadList();
     for (let i = 0; i < itemList.length; i++) {
         const item = itemList[i];
@@ -44,7 +48,13 @@ function updateView() {
             continue;
         }
 
-        let tempHtml = `<li>${item.text}`;
+        let tempHtml = `<li>`;
+
+        for (let j = 0; j < item.star; j++) {
+            tempHtml += `<i class="fas fa-star"></i>`;
+        }
+
+        tempHtml += ` ${item.text}`;
         tempHtml += ` <a href='#' onclick='removeItem(${i})'>X</a>`;
 
         if (item.isDone) {
@@ -56,6 +66,7 @@ function updateView() {
 
         tempHtml += `</li>\n`;
         html += tempHtml;
+
     }
 
     document.getElementById("resultArea").innerHTML = html;
