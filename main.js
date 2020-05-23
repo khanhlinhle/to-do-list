@@ -64,7 +64,7 @@ function updateView() {
             tempHtml += ` <a href='#' onclick='toggleDone(${i})'>Mark-Done</a>`;
         }
 
-        tempHtml += `</li>\n`;
+        tempHtml += `</li>\n`; // <~ Để xuống dòng
         html += tempHtml;
 
     }
